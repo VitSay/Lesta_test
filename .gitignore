@@ -1,3 +1,8 @@
 .vscode/
-result.txt
+c_src/lib.dll
 py_src/__pycache__
+
+my_test_.py
+matrix1.txt
+matrix2.txt
+result.txt
