@@ -20,6 +20,11 @@ class CLib:
         self._free_memory_func.restype = None
 
     def matrix_mult(self, matrix_1: PyMatrix, matrix_2: PyMatrix) -> PyMatrix:
+        # Проверка - либо обе матрицы пусты, либо обе матрицы не пусты
+        assert (matrix_1.isEmpty() and matrix_2.isEmpty()) or (not matrix_1.isEmpty() and not matrix_2.isEmpty())
+        # Проверка правильной размерности для перемножения
+        assert matrix_1.getNCols() == matrix_2.getNRows()
+
         # Преобразуем Python матрицы в C массивы чтобы передать в С функцию
         c_matrix_1 = matrix_1.getCMatrix()
         c_matrix_2 = matrix_2.getCMatrix()
@@ -28,7 +33,7 @@ class CLib:
         result_c_matrix = self._matrix_mult_func(c_matrix_1, c_matrix_2,
                                                  matrix_1.getNRows(), matrix_1.getNCols(),
                                                  matrix_2.getNRows(), matrix_2.getNCols())
-        
+
         # Преобразуем С массив в Python List
         result_list = []
         for row in range(matrix_1.getNRows()):
@@ -37,7 +42,6 @@ class CLib:
                 temp_row.append(result_c_matrix[row][col])
             result_list.append(temp_row)
 
-        result_PyMatrix = PyMatrix()
-        result_PyMatrix.setMatrix(result_list)
+        result_PyMatrix = PyMatrix(result_list)
         self._free_memory_func(result_c_matrix, result_PyMatrix.getNRows()) # Очищаем память выделенную С
         return result_PyMatrix
