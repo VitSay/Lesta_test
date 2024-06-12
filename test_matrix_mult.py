@@ -1,6 +1,5 @@
 import pytest
 import sys
-import ctypes
 from py_src.c_lib import CLib
 from py_src.py_matrix import PyMatrix
 from matrix_mul import main
