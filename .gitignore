@@ -1,5 +1,6 @@
 .vscode/
 c_src/lib.dll
+c_src/mylib.cpp
 py_src/__pycache__
 __pycache__
 
