@@ -1,4 +1,6 @@
 .vscode/
+.tox/
+.pytest_cache
 c_src/lib.dll
 c_src/mylib.cpp
 py_src/__pycache__
