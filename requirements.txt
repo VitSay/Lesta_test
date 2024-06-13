@@ -1,2 +1,2 @@
-pytest
-tox
+pytest==8.2.2
+tox==4.15.1
