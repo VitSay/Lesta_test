@@ -1,8 +1,12 @@
 import ctypes
 import re
+import numpy as np
+from py_src.c_lib import CLib
+from py_src.timer import runTime
 
 class PyMatrix:
     def __init__(self, matrix: list = None):
+        self._clib = None
         if matrix is None:
             self._matrix = []
             self._n_rows = -1
@@ -16,13 +20,62 @@ class PyMatrix:
         """
         res = ''
         for row in self._matrix:
-            res += ''.join(["{:>6}".format(str(num)) for num in row])
+            res += ''.join(["{:>10}".format(str(num)) for num in row])
             res += '\n'
         return res
     
     def __eq__(self, other: 'PyMatrix'):
         return self._matrix == other.getMatrix()
     
+    def readCLib(self, path: str='c_src/lib.dll'):
+        self._clib = CLib(path)
+
+    @runTime(10)
+    def C_matrixMult(self, other: 'PyMatrix') -> 'PyMatrix':
+        self.canBeMultiplied(self, other)
+
+        c_matrix_1 = self.getCMatrix()
+        c_matrix_2 = other.getCMatrix()
+
+        result_c_matrix = self._clib.matrix_mult_func(c_matrix_1, c_matrix_2,
+                                                       self.getNRows(), self.getNCols(),
+                                                       other.getNRows(), other.getNCols())
+
+        result_list = []
+        for row in range(self.getNRows()):
+            temp_row = []
+            for col in range(other.getNCols()):
+                temp_row.append(result_c_matrix[row][col])
+            result_list.append(temp_row)
+
+        self._clib.free_memory_func(result_c_matrix, len(result_list))
+        return PyMatrix(result_list)
+
+    @runTime(10)
+    def Py_matrixMult(self, other: 'PyMatrix') -> 'PyMatrix':
+        self.canBeMultiplied(self, other)
+        res = []
+        for row in range(self.getNRows()):
+            new_row = []
+            for col in range(other.getNCols()):
+                tmp = 0
+                for i in range(self.getNCols()):
+                    tmp += self.getMatrix()[row][i] * other.getMatrix()[i][col]
+                new_row.append(tmp)
+            res.append(new_row)
+        return PyMatrix(res)
+
+    @runTime(10)
+    def Numpy_matrixMult(self, other: 'PyMatrix'):
+        self.canBeMultiplied(self, other)
+        numpy_matrix_1 = np.array(self.getMatrix(), dtype='int32')
+        numpy_matrix_2 = np.array(other.getMatrix(), dtype='int32')
+        numpy_res_matrix = np.dot(numpy_matrix_1, numpy_matrix_2)
+        return PyMatrix(numpy_res_matrix.tolist())
+
+    def __mul__(self, other: 'PyMatrix'):
+        return self.C_matrixMult(other)
+
     def isEmpty(self):
         self._matrix == list()
 
@@ -103,3 +156,21 @@ class PyMatrix:
             return lst[ind]
         except IndexError:
             return default
+        
+    @staticmethod
+    def canBeMultiplied(matrix1: 'PyMatrix', matrix2: 'PyMatrix'):
+        assert matrix1.getNCols() == matrix2.getNRows()
+        assert (matrix1.isEmpty() and matrix2.isEmpty()) or (not matrix1.isEmpty() and not matrix2.isEmpty())
+        return True
+    
+def test_matrix():
+    matrix_1 = PyMatrix().readPyMatrix('matrix1.txt')
+    matrix_2 = PyMatrix().readPyMatrix('matrix2.txt')
+    matrix_1.readCLib()
+
+    (matrix_1 * matrix_2).writePyMatrix('result.txt')
+
+
+    # clib_res_matrix = matrix_1.C_matrixMult(matrix_2)
+    # py_res_matrix = matrix_1.Py_matrixMult(matrix_2)
+    # numpy_res_matrix = matrix_1.Numpy_matrixMult(matrix_2)
