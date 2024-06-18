@@ -168,9 +168,9 @@ def test_matrix():
     matrix_2 = PyMatrix().readPyMatrix('matrix2.txt')
     matrix_1.readCLib()
 
-    (matrix_1 * matrix_2).writePyMatrix('result.txt')
+    # (matrix_1 * matrix_2).writePyMatrix('result.txt')
 
 
-    # clib_res_matrix = matrix_1.C_matrixMult(matrix_2)
-    # py_res_matrix = matrix_1.Py_matrixMult(matrix_2)
-    # numpy_res_matrix = matrix_1.Numpy_matrixMult(matrix_2)
+    clib_res_matrix = matrix_1.C_matrixMult(matrix_2)
+    py_res_matrix = matrix_1.Py_matrixMult(matrix_2)
+    numpy_res_matrix = matrix_1.Numpy_matrixMult(matrix_2)

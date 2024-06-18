@@ -13,4 +13,4 @@ def main():
     (matrix_1 * matrix_2).writePyMatrix(args[3])
 
 if __name__ == "__main__":
-    main()
+    test_matrix()
