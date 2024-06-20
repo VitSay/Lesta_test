@@ -30,7 +30,7 @@ class PyMatrix:
     def readCLib(self, path: str='c_src/lib.dll'):
         self._clib = CLib(path)
 
-    @runTime(10)
+    @runTime(100)
     def C_matrixMult(self, other: 'PyMatrix') -> 'PyMatrix':
         self.canBeMultiplied(self, other)
 
@@ -51,7 +51,7 @@ class PyMatrix:
         self._clib.free_memory_func(result_c_matrix, len(result_list))
         return PyMatrix(result_list)
 
-    @runTime(10)
+    @runTime(100)
     def Py_matrixMult(self, other: 'PyMatrix') -> 'PyMatrix':
         self.canBeMultiplied(self, other)
         res = []
@@ -65,7 +65,7 @@ class PyMatrix:
             res.append(new_row)
         return PyMatrix(res)
 
-    @runTime(10)
+    @runTime(100)
     def Numpy_matrixMult(self, other: 'PyMatrix'):
         self.canBeMultiplied(self, other)
         numpy_matrix_1 = np.array(self.getMatrix(), dtype='int32')
