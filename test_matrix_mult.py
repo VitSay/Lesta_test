@@ -23,10 +23,6 @@ def clib(clib_path):
          (PyMatrix([[2],[-4]]), PyMatrix([[2,-3,4,-5,6]]), PyMatrix([[4,-6,8,-10,12],[-8,12,-16,20,-24]]))]
 )
 def test_correct_input(clib, monkeypatch, matrix1: PyMatrix, matrix2: PyMatrix, result: PyMatrix):
-    def mockreturn():
-        return matrix1.getCMatrix()
-
-
     actual_result = clib.matrix_mult(matrix1, matrix2)
     assert actual_result == result
 
